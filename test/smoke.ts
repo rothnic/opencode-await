@@ -164,16 +164,19 @@ async function testSummarizer() {
 async function testBuild() {
   console.log('Testing build...');
   
+  // Use process.cwd() for CI compatibility
+  const projectRoot = process.cwd();
+  
   const buildResult = await spawnProcess({ 
     cmd: ['bun', 'build', 'src/index.ts', '--outdir', 'dist', '--target', 'bun', '--format', 'esm', '--splitting'],
-    cwd: '/Users/nroth/workspace/opencode-await'
+    cwd: projectRoot
   });
   
   if (buildResult.exitCode !== 0) {
     throw new Error(`Build failed: ${buildResult.stderr}`);
   }
   
-  const distExists = await Bun.file('/Users/nroth/workspace/opencode-await/dist/index.js').exists();
+  const distExists = await Bun.file(`${projectRoot}/dist/index.js`).exists();
   if (!distExists) {
     throw new Error('dist/index.js not created');
   }
