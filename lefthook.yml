@@ -1,0 +1,19 @@
+# lefthook.yml - Git hooks for opencode-await
+# Run `lefthook install` to enable
+
+pre-commit:
+  parallel: true
+  commands:
+    typecheck:
+      run: bun run typecheck
+      fail_text: "TypeScript errors found. Run 'bun run typecheck' to see details."
+
+pre-push:
+  parallel: true
+  commands:
+    test:
+      run: bun run test
+      fail_text: "Tests failed. Run 'bun run test' to see details."
+    build:
+      run: bun run build
+      fail_text: "Build failed. Run 'bun run build' to see details."

@@ -1,0 +1,59 @@
+{
+  "name": "opencode-await",
+  "version": "0.1.0",
+  "description": "OpenCode plugin for awaiting long-running commands with polling, log capture, and AI summarization",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target bun --format esm --splitting && tsc --emitDeclarationOnly",
+    "test": "bun test/smoke.ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build && bun run test"
+  },
+  "keywords": [
+    "opencode",
+    "plugin",
+    "await",
+    "async",
+    "command",
+    "process",
+    "polling",
+    "log-capture",
+    "ai-summarization"
+  ],
+  "author": "Nick Roth <nick@nickroth.com> (https://www.nickroth.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rothnic/opencode-await.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rothnic/opencode-await/issues"
+  },
+  "homepage": "https://opencode-await.nickroth.com",
+  "peerDependencies": {
+    "@opencode-ai/plugin": "^1.0.0"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "^1.1.47",
+    "@types/bun": "latest",
+    "typescript": "^5.0.0",
+    "zod": "^3.24.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

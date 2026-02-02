@@ -1,0 +1,33 @@
+---
+title: AI Summarization
+description: Get AI-powered summaries of command output
+---
+
+## AI Summarization
+
+Enable AI summarization to get a concise summary of command output:
+
+```typescript
+await_command({
+  command: "npm run test",
+  summarize: {
+    enabled: true
+  }
+})
+```
+
+The result will include a `summary` field with the AI-generated summary.
+
+## Custom Model
+
+Specify a custom model:
+
+```typescript
+await_command({
+  command: "npm run test",
+  summarize: {
+    enabled: true,
+    model: "github-copilot/gpt-5-mini"
+  }
+})
+```
