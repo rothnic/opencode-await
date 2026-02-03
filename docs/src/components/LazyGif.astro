@@ -1,0 +1,284 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  staticSrc: ImageMetadata | string;
+  gifSrc: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  enableToggle?: boolean;
+  class?: string;
+}
+
+const {
+  staticSrc,
+  gifSrc,
+  alt,
+  width,
+  height,
+  enableToggle = false,
+  class: className,
+} = Astro.props;
+
+const isExternalStatic = typeof staticSrc === 'string';
+---
+
+<div 
+  class={`lazy-gif-container ${className || ''}`} 
+  data-gif-src={gifSrc} 
+  data-enable-toggle={enableToggle ? 'true' : 'false'}
+  data-state="static"
+>
+  <button type="button" class="lazy-gif-button" aria-label="Play GIF">
+    <div class="image-wrapper">
+      {isExternalStatic ? (
+        <img 
+          src={staticSrc as string} 
+          alt={alt} 
+          width={width} 
+          height={height} 
+          class="static-image"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <Image 
+          src={staticSrc as ImageMetadata} 
+          alt={alt} 
+          width={width} 
+          height={height} 
+          class="static-image"
+        />
+      )}
+      <img class="gif-image" alt={alt} width={width} height={height} />
+      
+      <div class="overlay">
+        <div class="icon-container play-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </div>
+        <div class="icon-container pause-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+        </div>
+        <div class="icon-container loading-icon">
+          <svg class="spinner" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" opacity="0.25"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10" opacity="0.75"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </button>
+</div>
+
+<style>
+  .lazy-gif-container {
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    background-color: #1a1a1a;
+    line-height: 0;
+  }
+
+  .lazy-gif-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    position: relative;
+    border-radius: inherit;
+    outline-offset: 4px;
+  }
+
+  .image-wrapper {
+    position: relative;
+    line-height: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .static-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    z-index: 1;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gif-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    max-width: 100%;
+    height: auto;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 3;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(0px);
+  }
+
+  .lazy-gif-button:hover .overlay {
+    background-color: rgba(0, 0, 0, 0.45);
+  }
+
+  .icon-container {
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    padding: 1.25rem;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+    transform: scale(0.8);
+  }
+
+  .lazy-gif-button:hover .icon-container {
+    transform: scale(1);
+  }
+
+  /* State: static */
+  [data-state="static"] .static-image {
+    opacity: 1;
+  }
+  [data-state="static"] .play-icon {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  /* State: loading */
+  [data-state="loading"] .static-image {
+    opacity: 0.7;
+  }
+  [data-state="loading"] .loading-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+  [data-state="loading"] .overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+  }
+
+  /* State: playing */
+  [data-state="playing"] .static-image {
+    opacity: 0;
+  }
+  [data-state="playing"] .gif-image {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  [data-state="playing"] .overlay {
+    background-color: transparent;
+    backdrop-filter: blur(0px);
+  }
+  [data-state="playing"] .lazy-gif-button:hover .overlay {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  /* If toggle is enabled, show pause icon on hover when playing */
+  [data-enable-toggle="true"][data-state="playing"] .lazy-gif-button:hover .pause-icon {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  .spinner {
+    animation: rotate 1s linear infinite;
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<script>
+  function initLazyGifs() {
+    const containers = document.querySelectorAll('.lazy-gif-container');
+    
+    containers.forEach(container => {
+      if (container.getAttribute('data-initialized')) return;
+      container.setAttribute('data-initialized', 'true');
+
+      const button = container.querySelector('.lazy-gif-button') as HTMLButtonElement;
+      const gifImg = container.querySelector('.gif-image') as HTMLImageElement;
+      
+      const gifSrc = (container as HTMLElement).dataset.gifSrc;
+      const enableToggle = (container as HTMLElement).dataset.enableToggle === 'true';
+      
+      let isLoaded = false;
+
+      button.addEventListener('click', () => {
+        const currentState = container.getAttribute('data-state');
+
+        if (!isLoaded) {
+          container.setAttribute('data-state', 'loading');
+          
+          if (gifSrc) {
+            gifImg.src = gifSrc;
+            
+            const handleLoad = () => {
+              isLoaded = true;
+              container.setAttribute('data-state', 'playing');
+              button.ariaLabel = "Pause GIF";
+              gifImg.removeEventListener('load', handleLoad);
+              gifImg.removeEventListener('error', handleError);
+            };
+
+            const handleError = () => {
+              container.setAttribute('data-state', 'static');
+              console.error('Failed to load GIF:', gifSrc);
+              gifImg.removeEventListener('load', handleLoad);
+              gifImg.removeEventListener('error', handleError);
+            };
+
+            gifImg.addEventListener('load', handleLoad);
+            gifImg.addEventListener('error', handleError);
+          }
+        } else if (enableToggle) {
+          if (currentState === 'playing') {
+            container.setAttribute('data-state', 'static');
+            button.ariaLabel = "Play GIF";
+          } else {
+            container.setAttribute('data-state', 'playing');
+            button.ariaLabel = "Pause GIF";
+          }
+        }
+      });
+    });
+  }
+
+  // Run on load and after swaps (for Starlight/Astro transitions)
+  initLazyGifs();
+  document.addEventListener('astro:after-swap', initLazyGifs);
+</script>

@@ -16,6 +16,8 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
+<div class="quick-install-container">
+
 ## Quick Install
 
 ```json
@@ -25,9 +27,11 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 }
 ```
 
+</div>
+
 ## Features
 
-<CardGrid>
+<CardGrid stagger>
   <Card title="Command Execution" icon="terminal">
     Run any shell command with configurable timeout up to 30 minutes.
   </Card>

@@ -1,20 +1,182 @@
-/* Minimal custom styles for opencode-await docs */
+/* Modern Starlight-inspired theme for opencode-await docs */
+
+/* Dark mode (default) - Purple/violet accent palette */
 :root {
-  --sl-color-accent-low: #1a1a2e;
-  --sl-color-accent: #4a4a6a;
-  --sl-color-accent-high: #8a8aaa;
+  /* Primary accent colors - purple/violet like Starlight.astro.build */
+  --sl-color-accent-low: #4c1d95;
+  --sl-color-accent: #7c3aed;
+  --sl-color-accent-high: #c4b5fd;
+
+  /* Grayscale palette */
   --sl-color-white: #ffffff;
-  --sl-color-gray-1: #eee;
-  --sl-color-gray-2: #c2c2c2;
-  --sl-color-gray-3: #8b8b8b;
-  --sl-color-gray-4: #585858;
-  --sl-color-gray-5: #383838;
-  --sl-color-gray-6: #272727;
-  --sl-color-black: #181818;
+  --sl-color-gray-1: #f1f5f9;
+  --sl-color-gray-2: #e2e8f0;
+  --sl-color-gray-3: #cbd5e1;
+  --sl-color-gray-4: #94a3b8;
+  --sl-color-gray-5: #64748b;
+  --sl-color-gray-6: #475569;
+  --sl-color-gray-7: #334155;
+  --sl-color-black: #0f172a;
+
+  /* Semantic colors */
+  --sl-color-bg: #0f172a;
+  --sl-color-bg-nav: #1e293b;
+  --sl-color-bg-sidebar: #1e293b;
+  --sl-color-bg-inline-code: #1e293b;
+  --sl-color-bg-code: #1e293b;
+  --sl-color-border: #334155;
+  --sl-color-text: #f8fafc;
+  --sl-color-text-accent: #c4b5fd;
+  --sl-color-text-invert: #0f172a;
 }
 
+/* Light mode */
 :root[data-theme='light'] {
-  --sl-color-accent-low: #e8e8f0;
-  --sl-color-accent: #5a5a7a;
-  --sl-color-accent-high: #2a2a4a;
+  /* Primary accent colors */
+  --sl-color-accent-low: #f3e8ff;
+  --sl-color-accent: #7c3aed;
+  --sl-color-accent-high: #5b21b6;
+
+  /* Grayscale palette */
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #f8fafc;
+  --sl-color-gray-2: #f1f5f9;
+  --sl-color-gray-3: #e2e8f0;
+  --sl-color-gray-4: #cbd5e1;
+  --sl-color-gray-5: #94a3b8;
+  --sl-color-gray-6: #64748b;
+  --sl-color-gray-7: #475569;
+  --sl-color-black: #0f172a;
+
+  /* Semantic colors */
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-nav: #f8fafc;
+  --sl-color-bg-sidebar: #f8fafc;
+  --sl-color-bg-inline-code: #f1f5f9;
+  --sl-color-bg-code: #f8fafc;
+  --sl-color-border: #e2e8f0;
+  --sl-color-text: #0f172a;
+  --sl-color-text-accent: #7c3aed;
+  --sl-color-text-invert: #ffffff;
+}
+
+/* Hero section gradient background */
+[data-has-hero] .hero {
+  background: radial-gradient(circle at 50% 50%, var(--sl-color-accent-low) 0%, var(--sl-color-bg) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-has-hero] .hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(var(--sl-color-accent) 0.5px, transparent 0.5px);
+  background-size: 24px 24px;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Hero title and tagline styling */
+.hero h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to right, var(--sl-color-white), var(--sl-color-accent-high));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:root[data-theme='light'] .hero h1 {
+  background: linear-gradient(to right, var(--sl-color-accent-high), var(--sl-color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  color: var(--sl-color-gray-2) !important;
+  font-size: 1.25rem !important;
+  line-height: 1.5 !important;
+  max-width: 40ch !important;
+}
+
+:root[data-theme='light'] .tagline {
+  color: var(--sl-color-gray-7) !important;
+}
+
+/* Card hover effects */
+.card {
+  border: 1px solid var(--sl-color-border) !important;
+  background-color: rgba(30, 41, 59, 0.5) !important;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+:root[data-theme='light'] .card {
+  background-color: rgba(248, 250, 260, 0.8) !important;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--sl-color-accent) !important;
+  box-shadow: 0 12px 32px -8px rgba(124, 58, 237, 0.25);
+}
+
+.card .title {
+  font-weight: 700 !important;
+  color: var(--sl-color-white) !important;
+}
+
+:root[data-theme='light'] .card .title {
+  color: var(--sl-color-black) !important;
+}
+
+/* Icon backgrounds for cards */
+.card .icon {
+  background: var(--sl-color-accent-low);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: var(--sl-color-accent-high) !important;
+}
+
+/* Action button hover effects */
+.action.primary {
+  background: var(--sl-color-accent) !important;
+  color: var(--sl-color-white) !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+
+.action.primary:hover {
+  background: var(--sl-color-accent-high) !important;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+}
+
+/* Quick Install Section */
+.quick-install-container {
+  margin-top: 4rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--sl-color-bg-nav) 0%, var(--sl-color-bg) 100%);
+  border: 1px solid var(--sl-color-border);
+}
+
+.quick-install-container h2 {
+  margin-top: 0 !important;
+}
+
+/* Site title with improved contrast */
+.site-title {
+  color: var(--sl-color-accent-high) !important;
+  font-weight: 600;
+}
+
+/* Link hover states */
+a:hover {
+  color: var(--sl-color-accent);
 }
