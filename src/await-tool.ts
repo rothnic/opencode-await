@@ -60,21 +60,34 @@ async function executePostCommand(command: string | undefined): Promise<void> {
 }
 
 export const awaitCommand: ReturnType<typeof tool> = tool({
-  description: `Wait for a command to complete with configurable timeout, pattern matching, and output formatting.
+  description: `Blocking command execution optimized for message-based AI billing (Antigravity, GitHub Copilot).
 
-Use this tool to:
-- Run a command and wait for it to complete
-- Detect success/error conditions via regex patterns in output
-- Get immediate notification when the command finishes (don't wait full duration)
-- Execute follow-up commands on success or failure
+WHEN TO USE THIS TOOL:
+- Commands with unpredictable duration (builds, deployments, CI workflows)
+- When you want to avoid polling loops that waste API calls
+- When verbose output should be saved to file, not returned in context
+- To keep your session context clean with concise success/failure results
 
-Key use case: Wait for GitHub Actions workflows to complete:
+HOW IT WORKS:
+- Session BLOCKS until command completes (no extra messages needed)
+- Logs saved to temp file for later analysis if needed
+- Optional AI summarization via free model (Copilot) for concise results
+- Returns structured success/failure status, not raw terminal dumps
+
+BILLING BENEFIT:
+For message-based subscriptions (Antigravity time-window, Copilot limits):
+- Traditional: Run → Timeout → Resume → Poll → Read logs = 4+ messages
+- With await_command: Single blocking call = 1 message
+
+Example - Wait for GitHub Actions:
 \`\`\`
 await_command({
   command: "gh run watch 12345 --exit-status",
   maxDuration: 600,
   successPattern: "completed.*success",
-  errorPattern: "failed|cancelled"
+  errorPattern: "failed|cancelled",
+  persistLogs: true,
+  summarize: { enabled: true }
 })
 \`\`\``,
 
