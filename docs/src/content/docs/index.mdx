@@ -1,9 +1,9 @@
 ---
 title: opencode-await
-description: Monitor long-running commands with polling, log capture, and AI summarization
+description: Simple, blocking command execution for AI agents - no polling loops needed
 template: splash
 hero:
-  tagline: An OpenCode plugin for awaiting command completion with configurable timeout, pattern matching, and AI-powered output analysis.
+  tagline: Stop your AI agent from spinning in polling loops. Run long commands that block until complete, then return concise success/failure output.
   actions:
     - text: Get Started
       link: /getting-started/installation/
@@ -15,6 +15,35 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<div class="hero-visual">
+  <div class="comparison">
+    <div class="before">
+      <span class="label">Without opencode-await</span>
+      <div class="flow">
+        <span class="step">Run command</span>
+        <span class="arrow">→</span>
+        <span class="step loop">Poll status</span>
+        <span class="arrow">→</span>
+        <span class="step loop">Poll again</span>
+        <span class="arrow">→</span>
+        <span class="step loop">Poll again...</span>
+        <span class="arrow">→</span>
+        <span class="step">Parse output</span>
+      </div>
+      <span class="cost">5+ API calls per command</span>
+    </div>
+    <div class="after">
+      <span class="label">With opencode-await</span>
+      <div class="flow">
+        <span class="step accent">await_command</span>
+        <span class="arrow">→</span>
+        <span class="step success">Done</span>
+      </div>
+      <span class="cost">1 API call, blocks until complete</span>
+    </div>
+  </div>
+</div>
 
 <div class="quick-install-container">
 
@@ -31,17 +60,17 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 ## Features
 
-<CardGrid stagger>
-  <Card title="Command Execution" icon="terminal">
-    Run any shell command with configurable timeout up to 30 minutes.
+<CardGrid>
+  <Card title="Blocking Execution" icon="rocket">
+    Agent session pauses until command completes. No polling loops, no wasted API calls.
   </Card>
-  <Card title="Pattern Matching" icon="magnifier">
-    Detect success or failure via regex patterns in output.
+  <Card title="Concise Output" icon="document">
+    Returns clean success/failure status instead of raw terminal dumps.
   </Card>
-  <Card title="Poll Mode" icon="refresh">
-    Periodically execute commands to check status.
+  <Card title="Simple Tool Calls" icon="pencil">
+    One intuitive function call replaces complex shell command construction.
   </Card>
   <Card title="AI Summarization" icon="star">
-    Get AI-powered summaries of verbose command output.
+    Optionally summarize verbose output into actionable insights.
   </Card>
 </CardGrid>
