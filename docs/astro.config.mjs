@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import compressor from "astro-compressor";
 import starlight from "@astrojs/starlight";
+import rehypeMermaid from "rehype-mermaid";
 
 import mdx from "@astrojs/mdx";
 
@@ -90,6 +91,9 @@ export default defineConfig({
   ],
   experimental: {
     clientPrerender: true,
+  },
+  markdown: {
+    rehypePlugins: [[rehypeMermaid, { strategy: "img-svg" }]],
   },
   vite: {
     plugins: [tailwindcss()],
