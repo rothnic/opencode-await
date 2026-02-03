@@ -1,0 +1,8 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/Sidebar.astro';
+---
+
+<div transition:persist="sidebar" transition:name="sidebar">
+  <Default {...Astro.props}><slot /></Default>
+</div>

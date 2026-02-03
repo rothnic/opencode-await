@@ -12,6 +12,11 @@ export default defineConfig({
         { icon: 'github', label: 'GitHub', href: 'https://github.com/rothnic/opencode-await' },
       ],
       customCss: ['./src/styles/custom.css'],
+      components: {
+        Head: './src/components/Head.astro',
+        Header: './src/components/Header.astro',
+        Sidebar: './src/components/Sidebar.astro',
+      },
       sidebar: [
         {
           label: 'Getting Started',
