@@ -1,120 +1,109 @@
-# Benchmark Test Instructions
+# opencode-await Benchmark
 
-## Purpose
-Compare agent efficiency when running long commands with uncertain duration.
+Compares agent efficiency when running long commands with uncertain duration.
 
-## Test Setup
+## The Problem
 
-### The Simulated Command
-`./benchmark/simulate-deploy.sh` - A script that:
-- Runs for 15-45 seconds (random)
-- Produces verbose log output every second
-- Has 80% success / 20% failure rate
-- Returns exit code 0 (success) or 1 (failure)
+For **message-based billing** services (Antigravity, GitHub Copilot):
+- Each agent turn/message costs money or counts against limits
+- Long-running commands may timeout, forcing a resume (extra message)
+- Verbose output pollutes context, increasing token usage
 
-### Metrics to Capture
-1. **Tool calls** - Count of bash/await_command invocations
-2. **Total messages** - Count of turns/messages in the session
-3. **Wall clock time** - Time from prompt to final answer
-4. **Context size** - Approximate tokens of log output in context
-5. **Accuracy** - Did the agent correctly identify success/failure?
+## Test Scripts
 
----
+### simulate-workflow.sh
+Simulates a CI/CD pipeline (like GitHub Actions or Docker build):
+- **Duration**: 180 seconds (configurable via first arg)
+- **Output**: ~500 lines of verbose build logs
+- **Result**: Success or failure (configurable via second arg)
 
-## Test A: WITHOUT opencode-await
+```bash
+./benchmark/simulate-workflow.sh 180 success   # 3-minute successful build
+./benchmark/simulate-workflow.sh 180 fail      # 3-minute failed build
+./benchmark/simulate-workflow.sh 60 success    # 1-minute quick test
+```
+
+### simulate-deploy.sh (legacy)
+Shorter test (15-45s random duration) for quick iteration.
+
+## Running the Benchmark
 
 ### Setup
-Remove opencode-await from opencode.json plugins
 
-### Prompt
-```
-Run the deployment script at ./benchmark/simulate-deploy.sh
+```bash
+# Create isolated test directories
+mkdir -p /tmp/opencode-benchmark/{without-plugin,with-plugin}
 
-This script deploys our application. I need you to:
-1. Execute the script
-2. Wait for it to complete (it may take a while)
-3. Tell me if it succeeded or failed
-4. Summarize any warnings or errors
+# Copy benchmark script
+cp benchmark/simulate-workflow.sh /tmp/opencode-benchmark/
 
-Important: The script duration is unpredictable. It could take 15-60 seconds.
-```
+# Create configs (adjust model as needed)
+echo '{"model": "antigravity/antigravity-claude-sonnet-4"}' > /tmp/opencode-benchmark/without-plugin/opencode.json
 
-### Expected Behavior
-Agent will likely:
-- Run the command with bash
-- Get timeout or need to poll for status
-- Read log files or re-run to check status
-- Parse verbose output manually
+echo '{"model": "antigravity/antigravity-claude-sonnet-4", "plugin": ["/path/to/opencode-await"]}' > /tmp/opencode-benchmark/with-plugin/opencode.json
 
-### Record
-- [ ] Number of tool calls: ____
-- [ ] Number of messages/turns: ____
-- [ ] Wall clock time: ____
-- [ ] Log output in context (chars): ____
-- [ ] Correct result identified: Yes/No
-
----
-
-## Test B: WITH opencode-await
-
-### Setup
-Add opencode-await to opencode.json plugins
-
-### Prompt
-```
-Run the deployment script at ./benchmark/simulate-deploy.sh
-
-This script deploys our application. I need you to:
-1. Execute the script
-2. Wait for it to complete (it may take a while)
-3. Tell me if it succeeded or failed
-4. Summarize any warnings or errors
-
-Important: The script duration is unpredictable. It could take 15-60 seconds.
+# Link script to both directories
+ln -sf /tmp/opencode-benchmark/simulate-workflow.sh /tmp/opencode-benchmark/without-plugin/
+ln -sf /tmp/opencode-benchmark/simulate-workflow.sh /tmp/opencode-benchmark/with-plugin/
 ```
 
-### Expected Behavior
-Agent should:
-- Use await_command with the script
-- Block until complete
-- Receive concise success/failure status
-- Optional: AI summary of output
+### Test Prompt
 
-### Record
-- [ ] Number of tool calls: ____
-- [ ] Number of messages/turns: ____
-- [ ] Wall clock time: ____
-- [ ] Log output in context (chars): ____
-- [ ] Correct result identified: Yes/No
+Use the same prompt for both tests:
 
----
+```
+Run the CI/CD workflow script at ./simulate-workflow.sh 180 success
 
-## Running the Tests
+This simulates a deployment pipeline. I need you to:
+1. Execute the script and wait for it to complete (takes ~3 minutes)
+2. Tell me if it succeeded or failed
+3. Summarize any warnings that occurred
 
-1. Make script executable:
-   ```bash
-   chmod +x benchmark/simulate-deploy.sh
-   ```
+Important: The script runs for about 3 minutes. Do not timeout early.
+```
 
-2. Test the script manually first:
-   ```bash
-   ./benchmark/simulate-deploy.sh
-   ```
+### Run Tests
 
-3. Start OpenCode session WITHOUT plugin, run Test A prompt
+```bash
+# Test A: WITHOUT plugin
+cd /tmp/opencode-benchmark/without-plugin
+time opencode run --format json "Run ./simulate-workflow.sh 180 success, wait for completion, report result"
 
-4. Start NEW OpenCode session WITH plugin, run Test B prompt
+# Test B: WITH plugin  
+cd /tmp/opencode-benchmark/with-plugin
+time opencode run --format json "Run ./simulate-workflow.sh 180 success, wait for completion, report result"
+```
 
-5. Compare metrics
+## Metrics to Compare
 
----
+| Metric | Description | Why It Matters |
+|--------|-------------|----------------|
+| **Tool Calls** | Number of bash/await_command invocations | Fewer = simpler session |
+| **Messages** | Number of turns in the session | Direct billing impact |
+| **Wall Time** | Total time from prompt to answer | Should be similar |
+| **Context Size** | Chars of log output in context | Token cost impact |
+| **Accuracy** | Correctly identified success/failure | Reliability |
+| **Log Persistence** | Was output saved to file? | Enables later analysis |
 
 ## Expected Results
 
-| Metric | Without Plugin | With Plugin | Improvement |
-|--------|---------------|-------------|-------------|
-| Tool calls | 3-5+ | 1 | 66-80% fewer |
-| Messages | 2-4+ | 1 | 50-75% fewer |
-| Wall time | ~same | ~same | - |
-| Context size | 2000+ chars | 200 chars | 90% smaller |
-| Accuracy | Varies | Consistent | More reliable |
+### WITHOUT opencode-await
+- May timeout and require resume (extra message)
+- Full verbose output (~500 lines) in context
+- Manual parsing of success/failure from logs
+- No log file persistence
+
+### WITH opencode-await
+- Single blocking call, no resume needed
+- Concise structured result in context
+- Pattern matching for success/failure detection
+- Logs saved to temp file for later analysis
+- Optional AI summarization of output
+
+## Key Differentiators
+
+1. **Timeout Handling**: await_command supports up to 30 minutes; bash may timeout at 2 minutes
+2. **Log Persistence**: Output saved to file, not dumped in context
+3. **Structured Results**: JSON response with status, exit code, matched patterns
+4. **AI Summarization**: Optional summarization via free model (Copilot)
+5. **Context Cleanliness**: Concise result instead of 500 lines of logs
