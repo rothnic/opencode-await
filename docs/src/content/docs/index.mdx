@@ -3,7 +3,7 @@ title: opencode-await
 description: Simple, blocking command execution for AI agents - no polling loops needed
 template: splash
 hero:
-  tagline: Stop your AI agent from spinning in polling loops. Run long commands that block until complete, then return concise success/failure output.
+  tagline: Stop wasting API calls on polling loops. Block until complete, get concise results, keep your session clean.
   actions:
     - text: Get Started
       link: /getting-started/installation/
@@ -16,32 +16,95 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-<div class="hero-visual">
-  <div class="comparison">
-    <div class="before">
-      <span class="label">Without opencode-await</span>
-      <div class="flow">
-        <span class="step">Run command</span>
-        <span class="arrow">→</span>
-        <span class="step loop">Poll status</span>
-        <span class="arrow">→</span>
-        <span class="step loop">Poll again</span>
-        <span class="arrow">→</span>
-        <span class="step loop">Poll again...</span>
-        <span class="arrow">→</span>
-        <span class="step">Parse output</span>
-      </div>
-      <span class="cost">5+ API calls per command</span>
+<div class="hero-comparison">
+  <div class="scenario before">
+    <div class="scenario-header">
+      <span class="scenario-icon">😰</span>
+      <span class="scenario-title">Traditional Approach</span>
     </div>
-    <div class="after">
-      <span class="label">With opencode-await</span>
-      <div class="flow">
-        <span class="step accent">await_command</span>
-        <span class="arrow">→</span>
-        <span class="step success">Done</span>
+    <div class="timeline">
+      <div class="timeline-item tool-call">
+        <span class="call-num">1</span>
+        <code>bash: npm run build</code>
       </div>
-      <span class="cost">1 API call, blocks until complete</span>
+      <div class="timeline-item waiting">
+        <span class="dots">• • •</span>
+        <span class="wait-text">How long will this take?</span>
+      </div>
+      <div class="timeline-item tool-call">
+        <span class="call-num">2</span>
+        <code>bash: echo $?</code>
+        <span class="note">Check if done</span>
+      </div>
+      <div class="timeline-item tool-call">
+        <span class="call-num">3</span>
+        <code>bash: echo $?</code>
+        <span class="note">Still running...</span>
+      </div>
+      <div class="timeline-item tool-call">
+        <span class="call-num">4</span>
+        <code>bash: cat build.log | tail -500</code>
+        <span class="note">Read output</span>
+      </div>
+      <div class="timeline-item tool-call">
+        <span class="call-num">5</span>
+        <code>bash: grep -i error build.log</code>
+        <span class="note">Parse errors</span>
+      </div>
     </div>
+    <div class="scenario-stats">
+      <div class="stat bad">5+ tool calls</div>
+      <div class="stat bad">Verbose logs in context</div>
+      <div class="stat bad">Metered API waste</div>
+    </div>
+  </div>
+
+  <div class="vs-divider">
+    <span>VS</span>
+  </div>
+
+  <div class="scenario after">
+    <div class="scenario-header">
+      <span class="scenario-icon">✨</span>
+      <span class="scenario-title">With opencode-await</span>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item tool-call accent">
+        <span class="call-num">1</span>
+        <code>await_command: npm run build</code>
+      </div>
+      <div class="timeline-item blocking">
+        <span class="block-icon">⏳</span>
+        <span class="block-text">Session blocks until complete</span>
+      </div>
+      <div class="timeline-item result success">
+        <span class="result-icon">✓</span>
+        <div class="result-content">
+          <strong>Build succeeded</strong>
+          <span class="result-detail">2 warnings (see /tmp/build.log)</span>
+        </div>
+      </div>
+    </div>
+    <div class="scenario-stats">
+      <div class="stat good">1 tool call</div>
+      <div class="stat good">Logs saved to file</div>
+      <div class="stat good">AI summary via free model</div>
+    </div>
+  </div>
+</div>
+
+<div class="value-props">
+  <div class="value-prop">
+    <span class="value-icon">💰</span>
+    <span class="value-text">Perfect for metered AI services that count each message</span>
+  </div>
+  <div class="value-prop">
+    <span class="value-icon">🧹</span>
+    <span class="value-text">Keeps session context clean with concise output</span>
+  </div>
+  <div class="value-prop">
+    <span class="value-icon">🤖</span>
+    <span class="value-text">Uses free models (like Copilot) for log summarization</span>
   </div>
 </div>
 
@@ -71,6 +134,6 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     One intuitive function call replaces complex shell command construction.
   </Card>
   <Card title="AI Summarization" icon="star">
-    Optionally summarize verbose output into actionable insights.
+    Optionally summarize verbose output using free models like Copilot.
   </Card>
 </CardGrid>
