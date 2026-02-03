@@ -180,3 +180,45 @@
 a:hover {
   color: var(--sl-color-accent);
 }
+
+/* Expressive Code syntax highlighting - high contrast overrides */
+/* Fix insufficient contrast in code blocks (was 2.87:1, needs 4.5:1) */
+.expressive-code pre code .ec-line {
+  color: var(--sl-color-text) !important;
+}
+
+/* String literals - use higher contrast pink/purple */
+.expressive-code pre code .ec-line [style*="#C789D6"],
+.expressive-code pre code .ec-line [style*="#c789d6"] {
+  color: #e9a8f0 !important;
+}
+
+/* Keywords and operators - ensure good contrast */
+.expressive-code pre code .ec-line [style*="#FF79C6"],
+.expressive-code pre code .ec-line [style*="#ff79c6"] {
+  color: #ff9ecd !important;
+}
+
+/* Comments - ensure visibility */
+.expressive-code pre code .ec-line [style*="#6272A4"],
+.expressive-code pre code .ec-line [style*="#6272a4"] {
+  color: #8b9cc4 !important;
+}
+
+/* Functions and methods */
+.expressive-code pre code .ec-line [style*="#50FA7B"],
+.expressive-code pre code .ec-line [style*="#50fa7b"] {
+  color: #7afca0 !important;
+}
+
+/* Numbers and constants */
+.expressive-code pre code .ec-line [style*="#BD93F9"],
+.expressive-code pre code .ec-line [style*="#bd93f9"] {
+  color: #d4b3ff !important;
+}
+
+/* Property names */
+.expressive-code pre code .ec-line [style*="#8BE9FD"],
+.expressive-code pre code .ec-line [style*="#8be9fd"] {
+  color: #b5f3ff !important;
+}
