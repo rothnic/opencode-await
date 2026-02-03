@@ -78,23 +78,36 @@ await_command({
 
 ## Flow Diagram
 
-```mermaid
-sequenceDiagram
-    participant Agent
-    participant Plugin
-    participant Command
-
-    Agent->>Plugin: await_command (poll mode)
-    loop Every interval seconds
-        Plugin->>Command: Execute
-        Command-->>Plugin: Output
-        Plugin->>Plugin: Check patterns
-        alt Pattern matched
-            Plugin-->>Agent: Return result
-        else Timeout
-            Plugin-->>Agent: Return timeout
-        end
-    end
+```
+┌─────────┐     ┌────────┐     ┌─────────┐
+│  Agent  │     │ Plugin │     │ Command │
+└────┬────┘     └───┬────┘     └────┬────┘
+     │              │               │
+     │ await_command│               │
+     │ (poll mode)  │               │
+     │─────────────>│               │
+     │              │               │
+     │              │ ╭─────────────╮
+     │              │ │ Loop every  │
+     │              │ │  N seconds  │
+     │              │ ╰──────┬──────╯
+     │              │        │
+     │              │ Execute│
+     │              │───────>│
+     │              │        │
+     │              │<───────│
+     │              │ Output │
+     │              │        │
+     │              ├──────┐ │
+     │              │Check │ │
+     │              │pattern │
+     │              │<─────┘ │
+     │              │        │
+     │    Result    │        │
+     │<─────────────│        │
+     │ (on match or │        │
+     │   timeout)   │        │
+     │              │        │
 ```
 
 ## Comparison: Poll Mode vs Standard Mode
