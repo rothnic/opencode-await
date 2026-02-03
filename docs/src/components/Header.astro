@@ -6,23 +6,3 @@ import Default from '@astrojs/starlight/components/Header.astro';
 <div transition:persist="header" transition:name="header">
   <Default {...Astro.props}><slot /></Default>
 </div>
-
-<script>
-  const updateHeader = () => {
-    document.querySelector('header')?.classList.toggle('scrolled', window.scrollY > 20);
-  };
-  window.addEventListener('scroll', updateHeader);
-  // Initial check on load
-  updateHeader();
-</script>
-
-<style is:global>
-  header {
-    background: transparent !important;
-    transition: background 0.3s ease !important;
-  }
-  header.scrolled {
-    background: var(--sl-color-bg) !important;
-    border-bottom: 1px solid var(--sl-color-border) !important;
-  }
-</style>
