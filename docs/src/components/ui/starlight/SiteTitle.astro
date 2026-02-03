@@ -6,12 +6,12 @@ import type { Props } from "@astrojs/starlight/props";
 
 const main = "/";
 const locale = Astro.props.locale ? Astro.props.locale + "/" : "";
-const docs = "/" + locale + "welcome-to-docs/";
+const docs = "/" + locale + "getting-started/installation/";
 ---
 
 <span class="site-title flex">
-  <a class="main-logo" href={main} set:html={mainLogo} aria-label="ScrewFast" />
-  <a class="docs-logo" href={docs} set:html={docsLogo} aria-label="ScrewFast Docs" />
+  <a class="main-logo" href={main} set:html={mainLogo} aria-label="opencode-await" />
+  <a class="docs-logo" href={docs} set:html={docsLogo} aria-label="opencode-await Docs" />
 </span>
 
 <style>

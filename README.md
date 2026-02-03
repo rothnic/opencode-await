@@ -1,36 +1,27 @@
 # opencode-await
 
-A native OpenCode plugin that provides the `await_command` tool for waiting on command completion with configurable timeout, pattern matching, and output formatting.
+[![npm version](https://img.shields.io/npm/v/opencode-await.svg)](https://www.npmjs.com/package/opencode-await)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+An OpenCode plugin that provides the `await_command` tool for waiting on command completion with configurable timeout, pattern matching, log capture, and AI summarization.
+
+**[Documentation](https://opencode-await.nickroth.com)**
 
 ## Installation
 
-### Project-Level (recommended)
+Add to your `opencode.json`:
 
-Copy or symlink to your project:
-
-```bash
-mkdir -p .opencode/plugin
-ln -s /Users/nroth/workspace/opencode-await .opencode/plugin/opencode-await
+```json
+{
+  "plugin": ["opencode-await"]
+}
 ```
 
-### Global Installation
+Restart OpenCode and the `await_command` tool will be available.
 
-```bash
-mkdir -p ~/.config/opencode/plugin
-ln -s /Users/nroth/workspace/opencode-await ~/.config/opencode/plugin/opencode-await
-```
+## Quick Start
 
-### Build
-
-```bash
-cd /Users/nroth/workspace/opencode-await
-bun install
-bun run build
-```
-
-## Usage
-
-The plugin exposes an `await_command` tool that agents can use:
+Wait for a GitHub Actions workflow:
 
 ```typescript
 await_command({
@@ -41,29 +32,33 @@ await_command({
 })
 ```
 
+## Features
+
+- **Command Execution** - Run any shell command with configurable timeout (up to 30 min)
+- **Pattern Matching** - Detect success/failure via regex patterns in output
+- **Poll Mode** - Periodically execute commands for status checks
+- **Log Capture** - Persist output to temp files for analysis
+- **AI Summarization** - Get AI-powered summaries of verbose output
+- **Output Templates** - Custom formatting with template variables
+- **Post-Execution** - Run follow-up commands on success/failure
+
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `command` | string | Yes | Command to execute (run via `sh -c`) |
-| `maxDuration` | number | Yes | Maximum wait time in seconds (1-1800) |
-| `successPattern` | string | No | Regex pattern indicating success in output |
-| `errorPattern` | string | No | Regex pattern indicating error in output |
-| `exitCodeSuccess` | number[] | No | Exit codes considered success (default: [0]) |
-| `outputTemplate` | string | No | Template for formatting output |
-| `templateFile` | string | No | Path to template file |
+| `command` | string | Yes | Command to execute (via `sh -c`) |
+| `maxDuration` | number | Yes | Max wait time in seconds (1-1800) |
+| `successPattern` | string | No | Regex indicating success |
+| `errorPattern` | string | No | Regex indicating error |
+| `pollMode` | object | No | Enable periodic execution |
+| `persistLogs` | boolean | No | Write output to temp file |
+| `summarize` | object | No | Enable AI summarization |
 | `onSuccess` | string | No | Command to run on success |
 | `onFailure` | string | No | Command to run on failure |
 
-## Template Variables
+See [full documentation](https://opencode-await.nickroth.com/api-reference/tool-options/) for all options.
 
-- `{{status}}` - Completion status (success, error, timeout, cancelled)
-- `{{elapsed}}` - Elapsed time in seconds
-- `{{output}}` - Command output
-- `{{exitCode}}` - Exit code or "N/A"
-- `{{matchedPattern}}` - Pattern that triggered completion
-
-## Example: Wait for GitHub Actions
+## Example: CI/CD Workflow
 
 ```typescript
 await_command({
@@ -71,23 +66,36 @@ await_command({
   maxDuration: 900,
   successPattern: "completed successfully",
   errorPattern: "failed|cancelled|timed out",
+  persistLogs: true,
+  summarize: { enabled: true },
   onSuccess: "echo 'Build passed!'",
-  onFailure: "echo 'Build failed!' && gh run view --log-failed"
+  onFailure: "gh run view --log-failed"
 })
 ```
 
 ## Architecture
 
-This is a **native OpenCode plugin**, not an MCP server. It integrates directly via:
+This is a **native OpenCode plugin**, not an MCP server:
 
 ```
-.opencode/plugin/opencode-await/index.ts  # Plugin entry point
-src/                                       # Source code
-  index.ts                                 # Plugin export
-  await-tool.ts                            # Tool implementation
-  process-manager.ts                       # Bun.spawn wrapper
-  output-formatter.ts                      # Template handling
-  types.ts                                 # TypeScript definitions
+src/
+├── index.ts            # Plugin entry
+├── await-tool.ts       # Tool implementation
+├── process-manager.ts  # Bun.spawn wrapper
+├── output-formatter.ts # Template handling
+├── log-capture.ts      # Temp file persistence
+├── summarizer.ts       # AI summarization
+└── types.ts            # TypeScript definitions
+```
+
+## Development
+
+```bash
+git clone https://github.com/rothnic/opencode-await.git
+cd opencode-await
+bun install
+bun test
+bun run build
 ```
 
 ## License

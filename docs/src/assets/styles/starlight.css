@@ -43,7 +43,6 @@
   --sl-color-gray-7: #f6f6f6;
   --sl-color-white: #181818;
   --list-marker-color: #585858;
-  --border-yellow: 54.9, 96.7%, 88%;
 }
 
 header {
@@ -117,17 +116,17 @@ article.card {
 }
 
 .starlight-aside--tip {
-  background: linear-gradient(45deg, #ff512f, #f09819);
+  background: linear-gradient(45deg, #4a4a4a, #6a6a6a);
   border: none;
   border-radius: 0.5rem;
-  color: #66350c;
+  color: #e0e0e0;
 }
 
 .starlight-aside--note {
-  background: linear-gradient(45deg, #00b4db, #2193b0);
+  background: linear-gradient(45deg, #2a2a2a, #4a4a4a);
   border: none;
   border-radius: 0.5rem;
-  color: #004558;
+  color: #d0d0d0;
 }
 
 .starlight-aside__icon {
@@ -135,11 +134,11 @@ article.card {
 }
 
 .starlight-aside--tip .starlight-aside__title {
-  color: #ffe0c2;
+  color: #ffffff;
 }
 
 .starlight-aside--note .starlight-aside__title {
-  color: #bbf3fef7;
+  color: #ffffff;
 }
 
 .sl-markdown-content ul:not(:where(.not-content *)) {
