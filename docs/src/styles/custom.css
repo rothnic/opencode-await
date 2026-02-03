@@ -187,10 +187,11 @@ a:hover {
   color: var(--sl-color-text) !important;
 }
 
-/* String literals - use higher contrast pink/purple */
+/* String literals - use higher contrast pink/purple (4.5:1+ ratio) */
 .expressive-code pre code .ec-line [style*="#C789D6"],
-.expressive-code pre code .ec-line [style*="#c789d6"] {
-  color: #e9a8f0 !important;
+.expressive-code pre code .ec-line [style*="#c789d6"],
+.expressive-code pre code .ec-line [style*="#e9a8f0"] {
+  color: #f5d6f7 !important;
 }
 
 /* Keywords and operators - ensure good contrast */
