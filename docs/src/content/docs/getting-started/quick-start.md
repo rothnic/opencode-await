@@ -16,8 +16,6 @@ await_command({
 
 ## Wait for GitHub Actions
 
-The most common use case is waiting for CI/CD workflows:
-
 ```typescript
 await_command({
   command: "gh run watch 12345 --exit-status",
@@ -29,7 +27,7 @@ await_command({
 
 ## Pattern Matching
 
-Use regex patterns to detect success or failure in the output:
+Use regex patterns to detect success or failure:
 
 ```typescript
 await_command({
@@ -39,8 +37,6 @@ await_command({
   errorPattern: "FAILED|Error:"
 })
 ```
-
-Pattern matching ends the command early when a match is found, so you don't have to wait for the full duration.
 
 ## Post-Execution Commands
 
@@ -57,8 +53,6 @@ await_command({
 
 ## Result Structure
 
-The tool returns a JSON object with:
-
 ```json
 {
   "status": "success",
@@ -69,5 +63,3 @@ The tool returns a JSON object with:
   "matchedPattern": "completed successfully"
 }
 ```
-
-See [Types](/api-reference/types/) for the complete result structure.

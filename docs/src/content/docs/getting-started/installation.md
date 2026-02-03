@@ -13,7 +13,7 @@ Add the plugin to your OpenCode configuration:
 }
 ```
 
-That's it! Restart OpenCode and the `await_command` tool will be available.
+Restart OpenCode and the `await_command` tool will be available.
 
 ## Requirements
 
@@ -22,17 +22,17 @@ That's it! Restart OpenCode and the `await_command` tool will be available.
 
 ## Verification
 
-After installation, verify the plugin is loaded by asking the agent:
+After installation, verify the plugin is loaded:
 
 ```
 What tools do you have available?
 ```
 
-You should see `await_command` in the list of available tools.
+You should see `await_command` in the list.
 
 ## Development Installation
 
-For local development or contributing:
+For local development:
 
 ```bash
 git clone https://github.com/rothnic/opencode-await.git
@@ -46,11 +46,4 @@ Then symlink to your project:
 ```bash
 mkdir -p .opencode/plugin
 ln -s /path/to/opencode-await .opencode/plugin/opencode-await
-```
-
-Or for global installation:
-
-```bash
-mkdir -p ~/.config/opencode/plugin
-ln -s /path/to/opencode-await ~/.config/opencode/plugin/opencode-await
 ```

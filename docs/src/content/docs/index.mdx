@@ -1,26 +1,43 @@
 ---
 title: opencode-await
-description: OpenCode plugin for awaiting long-running commands with polling, log capture, and AI summarization.
+description: Monitor long-running commands with polling, log capture, and AI summarization
 template: splash
 hero:
-  title: opencode-await
-  tagline: Monitor long-running commands with intelligence
+  tagline: An OpenCode plugin for awaiting command completion with configurable timeout, pattern matching, and AI-powered output analysis.
   actions:
     - text: Get Started
       link: /getting-started/installation/
       icon: right-arrow
-      variant: primary
     - text: View on GitHub
       link: https://github.com/rothnic/opencode-await
       icon: external
+      variant: minimal
 ---
 
-![opencode-await demo](/demo.gif)
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Quick Install
+
+```json
+// opencode.json
+{
+  "plugin": ["opencode-await"]
+}
+```
 
 ## Features
 
-- **Poll Mode** - Monitor commands at configurable intervals
-- **Log Capture** - Persist output to temp files for later analysis
-- **AI Summarization** - Get concise summaries of command output
-- **Pattern Matching** - Detect success/error conditions automatically
-- **Post-Command Hooks** - Run follow-up commands on success or failure
+<CardGrid>
+  <Card title="Command Execution" icon="terminal">
+    Run any shell command with configurable timeout up to 30 minutes.
+  </Card>
+  <Card title="Pattern Matching" icon="magnifier">
+    Detect success or failure via regex patterns in output.
+  </Card>
+  <Card title="Poll Mode" icon="refresh">
+    Periodically execute commands to check status.
+  </Card>
+  <Card title="AI Summarization" icon="star">
+    Get AI-powered summaries of verbose command output.
+  </Card>
+</CardGrid>
