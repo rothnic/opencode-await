@@ -5,6 +5,7 @@ import mermaid from 'astro-mermaid';
 
 export default defineConfig({
   integrations: [
+    mermaid(),
     starlight({
       title: 'opencode-await',
       social: {
@@ -35,7 +36,6 @@ export default defineConfig({
         './src/styles/custom.css',
       ],
     }),
-    mermaid(),
   ],
   site: 'https://opencode-await.nickroth.com',
 });
