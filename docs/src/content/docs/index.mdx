@@ -1,9 +1,9 @@
 ---
 title: opencode-await
-description: Simple, blocking command execution for AI agents - no polling loops needed
+description: Synchronous tool calls for OpenCode agents - minimize context window pollution
 template: splash
 hero:
-  tagline: Stop wasting API calls on polling loops. Block until complete, get concise results, keep your session clean.
+  tagline: Minimize context window pollution. Transform noisy polling loops into single, deterministic states with automatic log summarization.
   actions:
     - text: Get Started
       link: /getting-started/installation/
@@ -16,79 +16,69 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-<div class="hero-comparison">
-  <div class="scenario before">
-    <div class="scenario-header">
-      <span class="scenario-icon">😰</span>
-      <span class="scenario-title">Traditional Approach</span>
+<div class="terminal-mockup">
+  <div class="terminal-header">
+    <div class="terminal-dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
     </div>
-    <div class="timeline">
-      <div class="timeline-item tool-call">
-        <span class="call-num">1</span>
-        <code>bash: npm run build</code>
-      </div>
-      <div class="timeline-item waiting">
-        <span class="dots">• • •</span>
-        <span class="wait-text">How long will this take?</span>
-      </div>
-      <div class="timeline-item tool-call">
-        <span class="call-num">2</span>
-        <code>bash: echo $?</code>
-        <span class="note">Check if done</span>
-      </div>
-      <div class="timeline-item tool-call">
-        <span class="call-num">3</span>
-        <code>bash: echo $?</code>
-        <span class="note">Still running...</span>
-      </div>
-      <div class="timeline-item tool-call">
-        <span class="call-num">4</span>
-        <code>bash: cat build.log | tail -500</code>
-        <span class="note">Read output</span>
-      </div>
-      <div class="timeline-item tool-call">
-        <span class="call-num">5</span>
-        <code>bash: grep -i error build.log</code>
-        <span class="note">Parse errors</span>
-      </div>
-    </div>
-    <div class="scenario-stats">
-      <div class="stat bad">5+ tool calls</div>
-      <div class="stat bad">Verbose logs in context</div>
-      <div class="stat bad">Metered API waste</div>
-    </div>
+    <span class="terminal-title">agent_session_control.log</span>
   </div>
-
-  <div class="vs-divider">
-    <span>VS</span>
-  </div>
-
-  <div class="scenario after">
-    <div class="scenario-header">
-      <span class="scenario-icon">✨</span>
-      <span class="scenario-title">With opencode-await</span>
-    </div>
-    <div class="timeline">
-      <div class="timeline-item tool-call accent">
-        <span class="call-num">1</span>
-        <code>await_command: npm run build</code>
+  <div class="terminal-body">
+    <div class="terminal-columns">
+      <div class="terminal-panel polling-panel">
+        <div class="panel-label">Polling Noise</div>
+        <div class="terminal-content">
+          <div class="log-line"><span class="prompt blue">&gt;</span> start_task --id=9</div>
+          <div class="log-line indent">task initiated...</div>
+          <div class="log-line dim"><span class="prompt yellow">&gt;</span> check_status 9</div>
+          <div class="log-line indent">status: running...</div>
+          <div class="log-line dim"><span class="prompt yellow">&gt;</span> check_status 9</div>
+          <div class="log-line indent">status: running...</div>
+          <div class="log-line dim"><span class="prompt yellow">&gt;</span> check_status 9</div>
+          <div class="log-line indent">status: running...</div>
+          <div class="log-line dim"><span class="prompt yellow">&gt;</span> check_status 9</div>
+          <div class="log-line indent">status: running...</div>
+          <div class="log-line dim"><span class="prompt yellow">&gt;</span> check_status 9</div>
+          <div class="terminal-fade"></div>
+        </div>
+        <div class="panel-status bad">Wasted Tokens</div>
       </div>
-      <div class="timeline-item blocking">
-        <span class="block-icon">⏳</span>
-        <span class="block-text">Session blocks until complete</span>
+      <div class="terminal-panel clean-panel">
+        <div class="panel-label accent">Clean Session</div>
+        <div class="terminal-content clean">
+          <div class="log-line accent"><span class="prompt purple">&gt;</span> <strong>await_task</strong></div>
+          <pre class="json-output"><span class="bracket">{"{"}</span>
+  "status": "done",
+  "result": "built",
+  "summary": "..."
+<span class="bracket">{"}"}</span></pre>
+        </div>
+        <div class="connector"></div>
+        <div class="panel-status good">Minimal State</div>
       </div>
-      <div class="timeline-item result success">
-        <span class="result-icon">✓</span>
-        <div class="result-content">
-          <strong>Build succeeded</strong>
-          <span class="result-detail">2 warnings (see /tmp/build.log)</span>
+      <div class="terminal-panel summary-panel">
+        <div class="panel-label">Summarized Output</div>
+        <div class="summary-visual">
+          <div class="log-stack">
+            <div class="stack-line"></div>
+            <div class="stack-line short"></div>
+            <div class="stack-line"></div>
+            <div class="stack-line"></div>
+            <div class="stack-line medium"></div>
+            <div class="stack-line"></div>
+            <div class="stack-line half"></div>
+            <span class="line-count">1000 lines</span>
+          </div>
+          <div class="filter-arrow">
+            <span class="filter-icon">▼</span>
+          </div>
+          <div class="summary-result">
+            <span class="key">"summary"</span>: <span class="value">"Build completed successfully with no critical errors."</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="scenario-stats">
-      <div class="stat good">1 tool call</div>
-      <div class="stat good">Logs saved to file</div>
-      <div class="stat good">AI summary via free model</div>
     </div>
   </div>
 </div>
@@ -121,19 +111,21 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 </div>
 
-## Features
+## Clean Session Control
+
+Optimized architecture for reducing noise in autonomous agent loops.
 
 <CardGrid>
-  <Card title="Blocking Execution" icon="rocket">
-    Agent session pauses until command completes. No polling loops, no wasted API calls.
+  <Card title="State Determinism" icon="rocket">
+    Ensure the environment reaches a complete state before returning control to the agent, eliminating race conditions.
   </Card>
-  <Card title="Concise Output" icon="document">
-    Returns clean success/failure status instead of raw terminal dumps.
+  <Card title="Context Hygiene" icon="document">
+    Prevent context window overflow by replacing hundreds of polling logs with a single interaction record.
   </Card>
-  <Card title="Simple Tool Calls" icon="pencil">
-    One intuitive function call replaces complex shell command construction.
+  <Card title="Log Summarization" icon="star">
+    Automatically condense verbose stdout streams into semantic summaries using lightweight local models.
   </Card>
-  <Card title="AI Summarization" icon="star">
-    Optionally summarize verbose output using free models like Copilot.
+  <Card title="JSON Enforced" icon="pencil">
+    Wrap any CLI tool in a strict JSON schema return type, making parsing 100% reliable for your LLM.
   </Card>
 </CardGrid>
