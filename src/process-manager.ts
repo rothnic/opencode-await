@@ -162,30 +162,20 @@ export async function spawnProcess(options: ProcessOptions): Promise<ProcessResu
 }
 
 export interface PollOptions {
-  /** Command to execute */
   command: string;
-  /** Poll interval in seconds (1-60) */
   interval: number;
-  /** Maximum duration in seconds */
   maxDuration: number;
-  /** Regex pattern for success */
   successPattern?: RegExp;
-  /** Regex pattern for error */
   errorPattern?: RegExp;
-  /** Callback when new output is received */
   onOutput?: (chunk: string) => void;
-  /** AbortSignal for cancellation */
   signal?: AbortSignal;
+  exitOnComplete?: boolean;
 }
 
 export interface PollResult {
-  /** Exit code of last execution */
   exitCode: number | null;
-  /** Combined output from all polls */
   output: string;
-  /** Reason for completion */
-  reason: 'success' | 'error' | 'timeout' | 'cancelled';
-  /** Pattern that matched (if any) */
+  reason: 'success' | 'error' | 'timeout' | 'cancelled' | 'completed';
   matchedPattern?: string;
 }
 
@@ -193,6 +183,7 @@ export async function pollCommand(options: PollOptions): Promise<PollResult> {
   const startTime = Date.now();
   let output = "";
   let lastExitCode: number | null = 0;
+  const exitOnComplete = options.exitOnComplete ?? true;
   
   while (true) {
     const elapsed = (Date.now() - startTime) / 1000;
@@ -204,7 +195,6 @@ export async function pollCommand(options: PollOptions): Promise<PollResult> {
       return { exitCode: lastExitCode, output, reason: "cancelled" };
     }
     
-    // Execute command with short timeout (bounded by remaining time and 30s)
     const remainingMs = (options.maxDuration * 1000) - (Date.now() - startTime);
     const execTimeout = Math.min(options.interval * 1000, remainingMs, 30000);
     
@@ -218,7 +208,6 @@ export async function pollCommand(options: PollOptions): Promise<PollResult> {
     lastExitCode = result.exitCode;
     options.onOutput?.(chunk);
     
-    // Check for pattern match
     if (options.successPattern?.test(output)) {
       const match = output.match(options.successPattern);
       return { 
@@ -239,7 +228,14 @@ export async function pollCommand(options: PollOptions): Promise<PollResult> {
       };
     }
     
-    // Wait for next poll interval
+    if (exitOnComplete && result.exitCode !== null && !result.timedOut) {
+      return {
+        exitCode: result.exitCode,
+        output,
+        reason: "completed"
+      };
+    }
+    
     await Bun.sleep(options.interval * 1000);
   }
 }

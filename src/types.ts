@@ -104,6 +104,9 @@ export interface AwaitResult {
 
   /** Error message if summarization failed (model unavailable, etc.) */
   summarizeError?: string;
+
+  /** Searchable keywords extracted from the log for querying */
+  searchableKeywords?: string[];
 }
 
 /**

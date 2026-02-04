@@ -88,17 +88,19 @@ async function testPollCommand() {
   
   console.log('  ✓ pollCommand with success pattern works');
   
-  // Test timeout
-  const timeoutResult = await pollCommand({
+  // Test command completion without pattern match (new behavior: exits on complete, not timeout)
+  const completedResult = await pollCommand({
     command: 'echo "waiting"',
     interval: 1,
     maxDuration: 2,
     successPattern: /NEVER_MATCH/,
   });
   
-  if (timeoutResult.reason !== 'timeout') {
-    throw new Error(`Expected reason 'timeout', got '${timeoutResult.reason}'`);
+  if (completedResult.reason !== 'completed') {
+    throw new Error(`Expected reason 'completed', got '${completedResult.reason}'`);
   }
+  
+  console.log('  ✓ pollCommand exits on command completion');
 }
 
 async function testLogCapture() {

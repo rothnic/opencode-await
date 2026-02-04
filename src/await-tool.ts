@@ -68,10 +68,11 @@ Use this tool when you need to:
 - Wait for a build, deployment, or CI workflow to finish
 - Run a command that takes unpredictable time to complete
 - Avoid repeated polling that wastes context and API calls
+- Search for a pattern in command output with "did you mean" suggestions if not found
 
-The tool blocks until the command finishes, then returns a structured result with status, exit code, and optional AI summary. Logs are captured to a temp file for later analysis.
+Returns a clean, structured result with status, exit code, log path, and optional AI summary with searchable keywords. Logs auto-cleanup after 30 minutes.
 
-Call with examples: 'all' to see usage patterns (gh-actions, build, deploy, polling, summarize).`,
+Call with examples: 'all' to see usage patterns.`,
 
   args: {
     examples: tool.schema.enum(['gh-actions', 'build', 'deploy', 'polling', 'summarize', 'all']).optional()
@@ -229,15 +230,19 @@ Call with examples: 'all' to see usage patterns (gh-actions, build, deploy, poll
 
     let summary: string | undefined;
     let summarizeError: string | undefined;
+    let searchableKeywords: string[] | undefined;
     if (options.summarize?.enabled && combinedOutput) {
-       const summarizeResult = await summarizeOutput(combinedOutput, {
-         model: options.summarize.model
-       });
+       const summarizeResult = await summarizeOutput(
+         combinedOutput, 
+         { model: options.summarize.model },
+         options.successPattern
+       );
        if (summarizeResult.success) {
          summary = summarizeResult.summary;
        } else {
          summarizeError = summarizeResult.error;
        }
+       searchableKeywords = summarizeResult.keywords;
     }
 
     const result: AwaitResult = {
@@ -250,6 +255,7 @@ Call with examples: 'all' to see usage patterns (gh-actions, build, deploy, poll
       logPath: logCapture?.logPath,
       summary,
       summarizeError,
+      searchableKeywords,
     };
 
     const templateContext = createTemplateContext(result);

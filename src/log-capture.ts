@@ -1,31 +1,38 @@
 import { tmpdir } from "node:os";
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
 import { join } from "node:path";
 
-/**
- * Interface for log capture with temp file persistence
- */
+const DEFAULT_TTL_MS = 30 * 60 * 1000;
+
 export interface LogCapture {
-  /** Temp directory path */
   tempDir: string;
-  /** Log file path */
   logPath: string;
-  /** Append chunk to log file */
   write(chunk: string): Promise<void>;
-  /** Finalize and return log path */
   finalize(): Promise<string>;
-  /** Clean up temp directory */
   cleanup(): Promise<void>;
 }
 
-/**
- * Create a new log capture instance with temp file
- * @param prefix Prefix for temp directory name (default: "opencode-await-")
- */
-export async function createLogCapture(prefix = "opencode-await-"): Promise<LogCapture> {
+export async function createLogCapture(
+  prefix = "opencode-await-",
+  ttlMs = DEFAULT_TTL_MS
+): Promise<LogCapture> {
   const tempDir = await mkdtemp(join(tmpdir(), prefix));
   const logPath = join(tempDir, "output.log");
   let buffer = "";
+  let cleanupScheduled = false;
+  
+  const scheduleCleanup = () => {
+    if (cleanupScheduled) return;
+    cleanupScheduled = true;
+    
+    setTimeout(async () => {
+      try {
+        await rm(tempDir, { recursive: true, force: true });
+      } catch {
+        // Best effort cleanup
+      }
+    }, ttlMs).unref();
+  };
   
   return {
     tempDir,
@@ -35,13 +42,14 @@ export async function createLogCapture(prefix = "opencode-await-"): Promise<LogC
       await Bun.write(logPath, buffer);
     },
     async finalize() {
-      // Ensure final write
       await Bun.write(logPath, buffer);
+      scheduleCleanup();
       return logPath;
     },
     async cleanup() {
       try {
-        await Bun.$`rm -rf ${tempDir}`;
+        await rm(tempDir, { recursive: true, force: true });
+        cleanupScheduled = true;
       } catch {
         // Best effort cleanup
       }
