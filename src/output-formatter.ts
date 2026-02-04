@@ -51,7 +51,8 @@ export function createTemplateContext(result: AwaitResult): TemplateContext {
  * Default template used when no custom template is provided
  */
 export const DEFAULT_TEMPLATE = `Status: {{status}}
-Elapsed: {{elapsed}}s
 Exit Code: {{exitCode}}
+Elapsed: {{elapsed}}s
+Log File: {{logPath}}
 Output:
 {{output}}`;

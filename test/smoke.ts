@@ -152,10 +152,10 @@ async function testSummarizer() {
   
   console.log('  ✓ truncateForContext works');
   
-  // Test summarizeOutput returns placeholder
+  // Test summarizeOutput returns result object
   const summary = await summarizeOutput('test output');
-  if (!summary.includes('Summarizer prepared')) {
-    throw new Error('Expected placeholder summary');
+  if (!summary.success || !summary.summary?.includes('Summarization pending')) {
+    throw new Error('Expected success with pending summary');
   }
   
   console.log('  ✓ summarizeOutput returns placeholder');

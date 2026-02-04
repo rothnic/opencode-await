@@ -3,6 +3,8 @@ import { spawnProcess, pollCommand } from './process-manager';
 import { formatOutput, createTemplateContext, DEFAULT_TEMPLATE } from './output-formatter';
 import { createLogCapture, type LogCapture } from './log-capture';
 import { summarizeOutput } from './summarizer';
+import { getExamples, type ExampleName } from './examples';
+import { getProjectConfig, applyConfigDefaults } from './config';
 import type {
   AwaitCommandOptions,
   AwaitResult,
@@ -60,39 +62,21 @@ async function executePostCommand(command: string | undefined): Promise<void> {
 }
 
 export const awaitCommand: ReturnType<typeof tool> = tool({
-  description: `Blocking command execution optimized for message-based AI billing (Antigravity, GitHub Copilot).
+  description: `Wait for a long-running task to complete instead of polling for status.
 
-WHEN TO USE THIS TOOL:
-- Commands with unpredictable duration (builds, deployments, CI workflows)
-- When you want to avoid polling loops that waste API calls
-- When verbose output should be saved to file, not returned in context
-- To keep your session context clean with concise success/failure results
+Use this tool when you need to:
+- Wait for a build, deployment, or CI workflow to finish
+- Run a command that takes unpredictable time to complete
+- Avoid repeated polling that wastes context and API calls
 
-HOW IT WORKS:
-- Session BLOCKS until command completes (no extra messages needed)
-- Logs saved to temp file for later analysis if needed
-- Optional AI summarization via free model (Copilot) for concise results
-- Returns structured success/failure status, not raw terminal dumps
+The tool blocks until the command finishes, then returns a structured result with status, exit code, and optional AI summary. Logs are captured to a temp file for later analysis.
 
-BILLING BENEFIT:
-For message-based subscriptions (Antigravity time-window, Copilot limits):
-- Traditional: Run → Timeout → Resume → Poll → Read logs = 4+ messages
-- With await_command: Single blocking call = 1 message
-
-Example - Wait for GitHub Actions:
-\`\`\`
-await_command({
-  command: "gh run watch 12345 --exit-status",
-  maxDuration: 600,
-  successPattern: "completed.*success",
-  errorPattern: "failed|cancelled",
-  persistLogs: true,
-  summarize: { enabled: true }
-})
-\`\`\``,
+Call with examples: 'all' to see usage patterns (gh-actions, build, deploy, polling, summarize).`,
 
   args: {
-    command: tool.schema.string().describe('Command to execute (run via sh -c)'),
+    examples: tool.schema.enum(['gh-actions', 'build', 'deploy', 'polling', 'summarize', 'all']).optional()
+      .describe('Return usage examples instead of executing. Options: gh-actions, build, deploy, polling, summarize, all'),
+    command: tool.schema.string().optional().describe('Command to execute (run via sh -c). Required unless using examples.'),
     maxDuration: tool.schema.number().describe('Maximum wait time in seconds (1-1800, capped at 30 min)'),
     pollInterval: tool.schema.number().optional().describe('Not used - command runs once until completion'),
     successPattern: tool.schema.string().optional().describe('Regex pattern indicating success in output'),
@@ -115,28 +99,39 @@ await_command({
   },
 
   async execute(args, ctx) {
+    if (args.examples) {
+      return getExamples(args.examples as ExampleName);
+    }
+
+    if (!args.command) {
+      return 'Error: command is required when not using examples parameter';
+    }
+
+    const config = getProjectConfig();
+    const effectiveArgs = applyConfigDefaults(args as Record<string, unknown>, config);
+
     const startTime = Date.now();
     
     const options: AwaitCommandOptions = {
-      command: args.command,
-      maxDuration: Math.min(Math.max(args.maxDuration, 1), MAX_DURATION_SECONDS),
-      pollInterval: args.pollInterval 
-        ? Math.min(Math.max(args.pollInterval, MIN_POLL_INTERVAL), MAX_POLL_INTERVAL)
+      command: effectiveArgs.command as string,
+      maxDuration: Math.min(Math.max(effectiveArgs.maxDuration as number, 1), MAX_DURATION_SECONDS),
+      pollInterval: effectiveArgs.pollInterval 
+        ? Math.min(Math.max(effectiveArgs.pollInterval as number, MIN_POLL_INTERVAL), MAX_POLL_INTERVAL)
         : DEFAULT_POLL_INTERVAL,
-      successPattern: args.successPattern,
-      errorPattern: args.errorPattern,
-      exitCodeSuccess: args.exitCodeSuccess ?? [0],
-      outputTemplate: args.outputTemplate,
-      templateFile: args.templateFile,
-      onSuccess: args.onSuccess,
-      onFailure: args.onFailure,
-      pollMode: args.pollMode ? {
-        enabled: args.pollMode.enabled,
-        interval: args.pollMode.interval ?? DEFAULT_POLL_INTERVAL,
-        appendOutput: args.pollMode.appendOutput
+      successPattern: effectiveArgs.successPattern as string | undefined,
+      errorPattern: effectiveArgs.errorPattern as string | undefined,
+      exitCodeSuccess: (effectiveArgs.exitCodeSuccess as number[] | undefined) ?? [0],
+      outputTemplate: effectiveArgs.outputTemplate as string | undefined,
+      templateFile: effectiveArgs.templateFile as string | undefined,
+      onSuccess: effectiveArgs.onSuccess as string | undefined,
+      onFailure: effectiveArgs.onFailure as string | undefined,
+      pollMode: effectiveArgs.pollMode ? {
+        enabled: (effectiveArgs.pollMode as Record<string, unknown>).enabled as boolean,
+        interval: ((effectiveArgs.pollMode as Record<string, unknown>).interval as number | undefined) ?? DEFAULT_POLL_INTERVAL,
+        appendOutput: (effectiveArgs.pollMode as Record<string, unknown>).appendOutput as boolean | undefined
       } : undefined,
-      persistLogs: args.persistLogs,
-      summarize: args.summarize,
+      persistLogs: effectiveArgs.persistLogs as boolean | undefined,
+      summarize: effectiveArgs.summarize as { enabled: boolean; model?: string; promptTemplate?: string } | undefined,
     };
 
     const successRegex = tryCompileRegex(options.successPattern);
@@ -233,10 +228,16 @@ await_command({
     }
 
     let summary: string | undefined;
+    let summarizeError: string | undefined;
     if (options.summarize?.enabled && combinedOutput) {
-       summary = await summarizeOutput(combinedOutput, {
+       const summarizeResult = await summarizeOutput(combinedOutput, {
          model: options.summarize.model
        });
+       if (summarizeResult.success) {
+         summary = summarizeResult.summary;
+       } else {
+         summarizeError = summarizeResult.error;
+       }
     }
 
     const result: AwaitResult = {
@@ -248,6 +249,7 @@ await_command({
       matchedPattern,
       logPath: logCapture?.logPath,
       summary,
+      summarizeError,
     };
 
     const templateContext = createTemplateContext(result);

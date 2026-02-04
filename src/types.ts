@@ -101,6 +101,9 @@ export interface AwaitResult {
 
   /** AI-generated summary */
   summary?: string;
+
+  /** Error message if summarization failed (model unavailable, etc.) */
+  summarizeError?: string;
 }
 
 /**
