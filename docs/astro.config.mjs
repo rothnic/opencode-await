@@ -31,6 +31,7 @@ export default defineConfig({
         {
           label: 'Guides',
           items: [
+            { label: 'How It Works', slug: 'guides/how-it-works' },
             { label: 'Poll Mode', slug: 'guides/poll-mode' },
             { label: 'Log Capture', slug: 'guides/log-capture' },
             { label: 'AI Summarization', slug: 'guides/ai-summarization' },

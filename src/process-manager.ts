@@ -169,7 +169,6 @@ export interface PollOptions {
   errorPattern?: RegExp;
   onOutput?: (chunk: string) => void;
   signal?: AbortSignal;
-  exitOnComplete?: boolean;
 }
 
 export interface PollResult {
@@ -183,7 +182,6 @@ export async function pollCommand(options: PollOptions): Promise<PollResult> {
   const startTime = Date.now();
   let output = "";
   let lastExitCode: number | null = 0;
-  const exitOnComplete = options.exitOnComplete ?? true;
   
   while (true) {
     const elapsed = (Date.now() - startTime) / 1000;
@@ -228,7 +226,7 @@ export async function pollCommand(options: PollOptions): Promise<PollResult> {
       };
     }
     
-    if (exitOnComplete && result.exitCode !== null && !result.timedOut) {
+    if (result.exitCode !== null && !result.timedOut) {
       return {
         exitCode: result.exitCode,
         output,
