@@ -577,6 +577,123 @@ a:hover {
 }
 
 /* ============================================
+   MERMAID DIAGRAM THEMING
+   ============================================ */
+
+/* Dark mode mermaid overrides */
+:root .statediagram {
+  /* State boxes */
+  --mermaid-node-fill: #1e293b;
+  --mermaid-node-stroke: #7c3aed;
+  --mermaid-text: #f8fafc;
+  --mermaid-edge: #94a3b8;
+  --mermaid-label-bg: #0f172a;
+}
+
+:root .statediagram .node rect,
+:root .statediagram .statediagram-cluster rect.outer,
+:root .statediagram .statediagram-cluster rect.inner {
+  fill: #1e293b !important;
+  stroke: #7c3aed !important;
+}
+
+:root .statediagram .node rect.basic {
+  fill: #334155 !important;
+  stroke: #7c3aed !important;
+}
+
+:root .statediagram .nodeLabel,
+:root .statediagram .cluster-label,
+:root .statediagram .edgeLabel,
+:root .statediagram .stateLabel text,
+:root .statediagram g.stateGroup .state-title {
+  fill: #f8fafc !important;
+  color: #f8fafc !important;
+}
+
+:root .statediagram .edgeLabel .label rect {
+  fill: #0f172a !important;
+}
+
+:root .statediagram .transition,
+:root .statediagram .edge-thickness-normal {
+  stroke: #94a3b8 !important;
+}
+
+:root .statediagram .marker,
+:root .statediagram #statediagram-barbEnd,
+:root .statediagram defs #statediagram-barbEnd {
+  fill: #94a3b8 !important;
+  stroke: #94a3b8 !important;
+}
+
+:root .statediagram .node circle.state-start {
+  fill: #7c3aed !important;
+  stroke: #7c3aed !important;
+}
+
+:root .statediagram .node circle.state-end {
+  fill: #7c3aed !important;
+  stroke: #c4b5fd !important;
+}
+
+:root .statediagram .end-state-inner {
+  fill: #c4b5fd !important;
+}
+
+/* Light mode mermaid overrides */
+:root[data-theme='light'] .statediagram .node rect,
+:root[data-theme='light'] .statediagram .statediagram-cluster rect.outer,
+:root[data-theme='light'] .statediagram .statediagram-cluster rect.inner {
+  fill: #f3e8ff !important;
+  stroke: #7c3aed !important;
+}
+
+:root[data-theme='light'] .statediagram .node rect.basic {
+  fill: #e9d5ff !important;
+  stroke: #7c3aed !important;
+}
+
+:root[data-theme='light'] .statediagram .nodeLabel,
+:root[data-theme='light'] .statediagram .cluster-label,
+:root[data-theme='light'] .statediagram .edgeLabel,
+:root[data-theme='light'] .statediagram .stateLabel text,
+:root[data-theme='light'] .statediagram g.stateGroup .state-title {
+  fill: #0f172a !important;
+  color: #0f172a !important;
+}
+
+:root[data-theme='light'] .statediagram .edgeLabel .label rect {
+  fill: #ffffff !important;
+}
+
+:root[data-theme='light'] .statediagram .transition,
+:root[data-theme='light'] .statediagram .edge-thickness-normal {
+  stroke: #64748b !important;
+}
+
+:root[data-theme='light'] .statediagram .marker,
+:root[data-theme='light'] .statediagram #statediagram-barbEnd,
+:root[data-theme='light'] .statediagram defs #statediagram-barbEnd {
+  fill: #64748b !important;
+  stroke: #64748b !important;
+}
+
+:root[data-theme='light'] .statediagram .node circle.state-start {
+  fill: #7c3aed !important;
+  stroke: #7c3aed !important;
+}
+
+:root[data-theme='light'] .statediagram .node circle.state-end {
+  fill: #7c3aed !important;
+  stroke: #5b21b6 !important;
+}
+
+:root[data-theme='light'] .statediagram .end-state-inner {
+  fill: #5b21b6 !important;
+}
+
+/* ============================================
    FCP OPTIMIZATION - Critical above-the-fold
    ============================================ */
 

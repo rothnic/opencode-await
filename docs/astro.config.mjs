@@ -15,7 +15,7 @@ export default defineConfig({
       social: [
         {
           label: 'GitHub',
-          link: 'https://github.com/rothnic/opencode-await',
+          href: 'https://github.com/rothnic/opencode-await',
           icon: 'github',
         },
       ],
