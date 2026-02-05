@@ -1,16 +1,30 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import mermaid from 'astro-mermaid';
+import { remarkMermaid } from './remark-mermaid.mjs';
 
 export default defineConfig({
+  markdown: {
+    remarkPlugins: [remarkMermaid],
+  },
   integrations: [
-    mermaid(),
     starlight({
       title: 'opencode-await',
       social: {
         github: 'https://github.com/rothnic/opencode-await',
       },
+      head: [
+        {
+          tag: 'script',
+          attrs: {
+            type: 'module',
+          },
+          content: `
+            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+            mermaid.initialize({ startOnLoad: true, theme: 'base' });
+          `,
+        },
+      ],
       sidebar: [
         {
           label: 'Getting Started',
