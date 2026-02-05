@@ -35,29 +35,32 @@
   --terminal-border: #1e293b;
   --neon-green: #00ff9d;
   --neon-red: #ff4d4d;
+
+  /* Custom dimensions */
+  --sl-nav-height: 3.5rem;
 }
 
 /* Light mode */
 :root[data-theme='light'] {
   /* Primary accent colors */
-  --sl-color-accent-low: #f3e8ff;
+  --sl-color-accent-low: #f5f3ff;
   --sl-color-accent: #7c3aed;
-  --sl-color-accent-high: #5b21b6;
+  --sl-color-accent-high: #4c1d95;
 
-  /* Grayscale palette */
-  --sl-color-white: #ffffff;
+  /* Grayscale palette - Fixed for Starlight Light Mode conventions */
+  --sl-color-white: #0f172a;
   --sl-color-gray-1: #f8fafc;
   --sl-color-gray-2: #f1f5f9;
   --sl-color-gray-3: #e2e8f0;
-  --sl-color-gray-4: #cbd5e1;
-  --sl-color-gray-5: #94a3b8;
-  --sl-color-gray-6: #64748b;
-  --sl-color-gray-7: #475569;
-  --sl-color-black: #0f172a;
+  --sl-color-gray-4: #94a3b8;
+  --sl-color-gray-5: #64748b;
+  --sl-color-gray-6: #334155;
+  --sl-color-gray-7: #1e293b;
+  --sl-color-black: #ffffff;
 
   /* Semantic colors */
   --sl-color-bg: #ffffff;
-  --sl-color-bg-nav: #f8fafc;
+  --sl-color-bg-nav: #ffffff;
   --sl-color-bg-sidebar: #f8fafc;
   --sl-color-bg-inline-code: #f1f5f9;
   --sl-color-bg-code: #f8fafc;
@@ -72,15 +75,148 @@
   --terminal-border: #334155;
 }
 
+/* ============================================
+   NAVBAR & BRANDING
+   ============================================ */
+
+header.header {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--sl-color-border);
+  height: var(--sl-nav-height) !important;
+  padding: 0 1.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.header .title-wrapper {
+  align-items: center !important;
+}
+
+.site-title {
+  color: var(--sl-color-accent-high) !important;
+  font-weight: 800 !important;
+  font-size: 1.25rem !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.site-title span {
+  color: inherit !important;
+}
+
+:root[data-theme='light'] header.header {
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+:root[data-theme='light'] .site-title {
+  color: var(--sl-color-accent) !important;
+}
+
+/* Fix navbar icon vertical alignment */
+.header .sl-flex {
+  align-items: center !important;
+}
+
+/* Fix theme toggle box issue */
+starlight-theme-select select {
+  background-color: transparent !important;
+  border: 1px solid var(--sl-color-border) !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 0.5rem !important;
+}
+
+:root[data-theme='light'] starlight-theme-select select {
+  color: var(--sl-color-text) !important;
+  border-color: var(--sl-color-gray-3) !important;
+}
+
+/* Fix search bar in light mode */
+:root[data-theme='light'] site-search button {
+  background-color: var(--sl-color-gray-1) !important;
+  border-color: var(--sl-color-gray-3) !important;
+  color: var(--sl-color-gray-5) !important;
+}
+
+:root[data-theme='light'] site-search button:hover {
+  border-color: var(--sl-color-accent) !important;
+}
+
+:root[data-theme='light'] site-search kbd {
+  background-color: var(--sl-color-gray-2) !important;
+  color: var(--sl-color-gray-6) !important;
+  border-color: var(--sl-color-gray-3) !important;
+}
+
+/* ============================================
+   SIDEBAR & NAVIGATION
+   ============================================ */
+
+/* Global sidebar text fixes */
+[data-theme='light'] #starlight__sidebar a:not([aria-current="page"]),
+[data-theme='light'] .right-sidebar a:not([aria-current="true"]),
+[data-theme='light'] .sidebar-content a:not([aria-current="page"]) {
+  color: #475569 !important;
+}
+
+[data-theme='light'] #starlight__sidebar a:hover,
+[data-theme='light'] .right-sidebar a:hover {
+  color: #7c3aed !important;
+}
+
+[data-theme='light'] #starlight__sidebar a[aria-current="page"],
+[data-theme='light'] .sidebar-content a[aria-current="page"] {
+  color: #ffffff !important;
+  background-color: #7c3aed !important;
+}
+
+[data-theme='light'] #starlight__sidebar summary {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* Pagination contrast */
+.pagination-links a {
+  border-color: var(--sl-color-gray-3) !important;
+}
+
+.pagination-links a:hover {
+  border-color: var(--sl-color-accent) !important;
+}
+
+.pagination-links .link-title {
+  color: var(--sl-color-text) !important;
+}
+
+.pagination-links svg {
+  color: var(--sl-color-accent) !important;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
 /* Hero section gradient background */
 [data-has-hero] .hero {
   background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--sl-color-accent-low) 0%, transparent 50%), var(--sl-color-bg);
   position: relative;
   overflow: hidden;
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+  min-height: auto !important;
+}
+
+@media (min-width: 50rem) {
+  [data-has-hero] .hero {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
 }
 
 /* Hero title and tagline styling */
 .hero h1 {
+  margin-top: 0 !important;
   font-weight: 800;
   letter-spacing: -0.02em;
   background: linear-gradient(to right, var(--sl-color-white), var(--sl-color-accent-high));
@@ -91,9 +227,6 @@
 
 :root[data-theme='light'] .hero h1 {
   background: linear-gradient(to right, var(--sl-color-accent-high), var(--sl-color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .tagline {
@@ -108,7 +241,7 @@
 }
 
 /* ============================================
-   TERMINAL MOCKUP - CSS-only, no JavaScript
+   TERMINAL MOCKUP
    ============================================ */
 
 .terminal-mockup {
@@ -522,25 +655,6 @@
   box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
 }
 
-/* ============================================
-   NAV STYLING (minor updates)
-   ============================================ */
-
-header.header {
-  background: rgba(15, 23, 42, 0.95) !important;
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--sl-color-border);
-}
-
-:root[data-theme='light'] header.header {
-  background: rgba(248, 250, 252, 0.95) !important;
-}
-
-.site-title {
-  color: var(--sl-color-accent-high) !important;
-  font-weight: 600;
-}
-
 /* Link hover states */
 a:hover {
   color: var(--sl-color-accent);
@@ -577,8 +691,53 @@ a:hover {
 }
 
 /* ============================================
-   MERMAID DIAGRAM THEMING
+   MERMAID DIAGRAM THEMING & READABILITY
    ============================================ */
+
+.statediagram {
+  margin: 3rem auto !important;
+  display: block !important;
+  max-width: 100% !important;
+  height: auto !important;
+  padding: 1.5rem !important;
+  overflow: visible !important;
+}
+
+@media (min-width: 50rem) {
+  .statediagram {
+    margin-bottom: 4rem !important;
+    margin-top: 3rem !important;
+  }
+}
+
+/* Global Mermaid label styling */
+.statediagram .nodeLabel,
+.statediagram .cluster-label,
+.statediagram .edgeLabel,
+.statediagram .stateLabel text,
+.statediagram g.stateGroup .state-title,
+.statediagram .label {
+  font-size: 16px !important;
+  font-family: var(--sl-font-system) !important;
+}
+
+/* Specific scaling for nested text */
+.statediagram .nodeLabel,
+.statediagram .stateLabel text {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+.statediagram .edgeLabel,
+.statediagram .edgeLabel span {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.statediagram .cluster-label {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+}
 
 /* Dark mode mermaid overrides */
 :root .statediagram {
@@ -595,11 +754,13 @@ a:hover {
 :root .statediagram .statediagram-cluster rect.inner {
   fill: #1e293b !important;
   stroke: #7c3aed !important;
+  stroke-width: 2.5px !important;
 }
 
 :root .statediagram .node rect.basic {
   fill: #334155 !important;
-  stroke: #7c3aed !important;
+  stroke: #a78bfa !important;
+  stroke-width: 2.5px !important;
 }
 
 :root .statediagram .nodeLabel,
@@ -609,15 +770,18 @@ a:hover {
 :root .statediagram g.stateGroup .state-title {
   fill: #f8fafc !important;
   color: #f8fafc !important;
+  font-weight: 500 !important;
 }
 
 :root .statediagram .edgeLabel .label rect {
   fill: #0f172a !important;
+  fill-opacity: 0.9 !important;
 }
 
 :root .statediagram .transition,
 :root .statediagram .edge-thickness-normal {
   stroke: #94a3b8 !important;
+  stroke-width: 2.5px !important;
 }
 
 :root .statediagram .marker,
@@ -628,30 +792,33 @@ a:hover {
 }
 
 :root .statediagram .node circle.state-start {
-  fill: #7c3aed !important;
-  stroke: #7c3aed !important;
+  fill: #00ff9d !important;
+  stroke: #00ff9d !important;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 157, 0.4));
 }
 
 :root .statediagram .node circle.state-end {
-  fill: #7c3aed !important;
-  stroke: #c4b5fd !important;
+  fill: #ff4d4d !important;
+  stroke: #ffffff !important;
+  stroke-width: 2px !important;
 }
 
 :root .statediagram .end-state-inner {
-  fill: #c4b5fd !important;
+  fill: #ffffff !important;
 }
 
 /* Light mode mermaid overrides */
 :root[data-theme='light'] .statediagram .node rect,
 :root[data-theme='light'] .statediagram .statediagram-cluster rect.outer,
 :root[data-theme='light'] .statediagram .statediagram-cluster rect.inner {
-  fill: #f3e8ff !important;
+  fill: #f5f3ff !important;
   stroke: #7c3aed !important;
+  stroke-width: 2px !important;
 }
 
 :root[data-theme='light'] .statediagram .node rect.basic {
-  fill: #e9d5ff !important;
-  stroke: #7c3aed !important;
+  fill: #ede9fe !important;
+  stroke: #6d28d9 !important;
 }
 
 :root[data-theme='light'] .statediagram .nodeLabel,
@@ -659,42 +826,54 @@ a:hover {
 :root[data-theme='light'] .statediagram .edgeLabel,
 :root[data-theme='light'] .statediagram .stateLabel text,
 :root[data-theme='light'] .statediagram g.stateGroup .state-title {
-  fill: #0f172a !important;
-  color: #0f172a !important;
+  fill: #1e1b4b !important;
+  color: #1e1b4b !important;
+  font-weight: 700 !important;
+}
+
+:root[data-theme='light'] .statediagram .edgeLabel span,
+:root[data-theme='light'] .statediagram .edgeLabel text,
+:root[data-theme='light'] .statediagram .edgeLabel {
+  color: #1e1b4b !important;
+  fill: #1e1b4b !important;
+  font-weight: 700 !important;
 }
 
 :root[data-theme='light'] .statediagram .edgeLabel .label rect {
   fill: #ffffff !important;
+  fill-opacity: 0.95 !important;
 }
 
 :root[data-theme='light'] .statediagram .transition,
 :root[data-theme='light'] .statediagram .edge-thickness-normal {
-  stroke: #64748b !important;
+  stroke: #334155 !important;
+  stroke-width: 3px !important;
 }
 
 :root[data-theme='light'] .statediagram .marker,
 :root[data-theme='light'] .statediagram #statediagram-barbEnd,
 :root[data-theme='light'] .statediagram defs #statediagram-barbEnd {
-  fill: #64748b !important;
-  stroke: #64748b !important;
+  fill: #334155 !important;
+  stroke: #334155 !important;
 }
 
 :root[data-theme='light'] .statediagram .node circle.state-start {
-  fill: #7c3aed !important;
-  stroke: #7c3aed !important;
+  fill: #059669 !important;
+  stroke: #059669 !important;
 }
 
 :root[data-theme='light'] .statediagram .node circle.state-end {
-  fill: #7c3aed !important;
-  stroke: #5b21b6 !important;
+  fill: #dc2626 !important;
+  stroke: #ffffff !important;
+  stroke-width: 2px !important;
 }
 
 :root[data-theme='light'] .statediagram .end-state-inner {
-  fill: #5b21b6 !important;
+  fill: #ffffff !important;
 }
 
 /* ============================================
-   FCP OPTIMIZATION - Critical above-the-fold
+   FCP OPTIMIZATION
    ============================================ */
 
 /* Preload critical fonts via font-display */

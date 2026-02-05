@@ -6,7 +6,20 @@ import rehypeMermaid from 'rehype-mermaid';
 export default defineConfig({
   markdown: {
     rehypePlugins: [
-      [rehypeMermaid, { strategy: 'inline-svg' }]
+      [rehypeMermaid, {
+        strategy: 'inline-svg',
+        mermaidConfig: {
+          theme: 'base',
+          themeVariables: {
+            fontSize: '18px',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+          },
+          state: {
+            padding: 15,
+            textHeight: 20,
+          },
+        },
+      }]
     ],
   },
   integrations: [

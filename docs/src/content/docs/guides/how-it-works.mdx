@@ -9,39 +9,35 @@ The `await_command` tool operates as a state machine that handles command execut
 
 ```mermaid
 stateDiagram-v2
-    direction TB
+    direction LR
     
-    [*] --> Start
-    Start --> ModeCheck: Validate Arguments
-
-    state "Blocking Mode (Default)" as Blocking {
-        Spawn --> AwaitExit: Execute Command
-        AwaitExit --> Analyze: Process Finished
-        Analyze --> Match: Check Output & Exit Code
-    }
-
-    state "Polling Mode" as Polling {
-        Loop --> PollRun: Interval Start
-        PollRun --> PollCheck: Run & Capture Output
-        PollCheck --> Wait: No Match Found
-        Wait --> Loop: Sleep (pollInterval)
-    }
-
-    ModeCheck --> Blocking: Poll Disabled
-    ModeCheck --> Polling: Poll Enabled
-
-    Match --> Success: Success Pattern / Exit 0
-    Match --> Failure: Error Pattern / Non-0 Exit
+    [*] --> Init
+    Init --> Mode: validate
     
-    PollCheck --> Success: Success Pattern Found
-    PollCheck --> Failure: Error Pattern Found
-    PollCheck --> Failure: Timeout / Max Duration
-
-    state "Result Processing" as Result {
-        Success --> Hooks: Run onSuccess
-        Failure --> Hooks: Run onFailure
-        Hooks --> Summarize: AI Summary (if enabled)
-        Summarize --> [*]: Return JSON Result
+    state "Blocking" as B {
+        Run --> Wait
+        Wait --> Check
+    }
+    
+    state "Polling" as P {
+        Poll --> Eval
+        Eval --> Sleep: retry
+        Sleep --> Poll
+    }
+    
+    Mode --> B: poll=false
+    Mode --> P: poll=true
+    
+    Check --> OK: pass
+    Check --> Err: fail
+    Eval --> OK: match
+    Eval --> Err: timeout
+    
+    state "Finish" as F {
+        OK --> Hook
+        Err --> Hook
+        Hook --> Sum
+        Sum --> [*]
     }
 ```
 
