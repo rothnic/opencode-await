@@ -11,7 +11,7 @@ export default defineConfig({
         mermaidConfig: {
           theme: 'base',
           themeVariables: {
-            fontSize: '18px',
+            fontSize: '22px',
             fontFamily: 'system-ui, -apple-system, sans-serif',
           },
           state: {
